@@ -19,7 +19,7 @@ impl TicTacToe {
         let mut turn = 1;
         loop {
             if turn > 9 {
-                println!("{}\nNo Winner!", self.draw_board());
+                println!("{}\nNo Winner!", self.draw());
                 break;
             }
 
@@ -31,7 +31,7 @@ impl TicTacToe {
 
             let res = self.check_board();
             if res != String::new() {
-                println!("{}\n{}", self.draw_board(), res);
+                println!("{}\n{}", self.draw(), res);
                 break;
             } else {
                 turn += 1;
@@ -42,11 +42,7 @@ impl TicTacToe {
     /**make sure the input move is valid*/
     fn get_move(&self) -> usize {
         loop {
-            println!(
-                "{}\nEnter the position of the next move\n{}",
-                self.draw_board(),
-                GAME_KEY
-            );
+            println!("{}\n{}", self.draw(), GAME_KEY);
 
             let mut pos: String = String::new();
             self.read(&mut pos);
@@ -60,7 +56,7 @@ impl TicTacToe {
     }
 
     /**draw the board*/
-    fn draw_board(&self) -> String {
+    fn draw(&self) -> String {
         let (mut output, mut c) = (String::new(), 0);
         for m in &self.board {
             output.push_str(m.get_icon());
