@@ -6,11 +6,11 @@ pub enum Piece {
 }
 
 impl Piece {
-    pub fn get_name(&self) -> String {
+    pub fn get_name(&self) -> &str {
         match self {
-            Piece::X => String::from("Crosses"),
-            Piece::O => String::from("Noughts"),
-            Piece::N => String::new(),
+            Piece::X => "Crosses",
+            Piece::O => "Noughts",
+            Piece::N => "",
         }
     }
 
