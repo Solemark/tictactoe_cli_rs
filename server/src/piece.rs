@@ -1,8 +1,11 @@
 #[derive(PartialEq)]
 pub enum Piece {
-    X, // Cross
-    O, // Nought
-    N, // None
+    ///Cross
+    X,
+    ///Nought
+    O,
+    ///None/Empty
+    N,
 }
 
 impl Piece {
@@ -14,11 +17,11 @@ impl Piece {
         }
     }
 
-    pub fn get_icon(&self) -> &str {
+    pub fn get_icon(&self) -> char {
         match self {
-            Piece::X => "|X|",
-            Piece::O => "|O|",
-            Piece::N => "|_|",
+            Piece::X => 'X',
+            Piece::O => 'O',
+            Piece::N => '_',
         }
     }
 
@@ -27,6 +30,14 @@ impl Piece {
             Piece::X => 1,
             Piece::O => -1,
             Piece::N => 0,
+        }
+    }
+
+    pub fn get_piece(p: &str) -> Piece {
+        match p {
+            "X" => Piece::X,
+            "O" => Piece::O,
+            _ => Piece::N,
         }
     }
 }

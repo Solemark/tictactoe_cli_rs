@@ -1,9 +1,11 @@
 mod consts;
 mod piece;
+mod test;
 mod tictactoe;
 
 use {
     common::{handle_response, send_message, BIND_ERR, CN_ROUTE, P1_ROUTE, P2_ROUTE, SR_ROUTE},
+    piece::Piece,
     std::net::TcpListener,
     tictactoe::TicTacToe,
 };
@@ -17,6 +19,10 @@ struct Server {
     board: TicTacToe,
     ///player count
     p_count: u8,
+    ///player turn
+    p_turn: u8,
+    ///turn count
+    t_count: u8,
 }
 impl Server {
     ///Create a new Server
@@ -24,6 +30,8 @@ impl Server {
         Server {
             board: TicTacToe::new(),
             p_count: 0,
+            p_turn: 1,
+            t_count: 0,
         }
     }
 
@@ -32,14 +40,15 @@ impl Server {
         for stream in TcpListener::bind(SR_ROUTE).expect(BIND_ERR).incoming() {
             let msg = handle_response(stream.unwrap());
             if msg == "0" {
-                self.handle_new_player();
+                self.handle_new_game();
             } else {
-                self.handle_existing_player(msg);
+                self.handle_existing_game(msg);
             }
         }
     }
 
-    fn handle_new_player(&mut self) {
+    ///Assign new player if >2 players
+    fn handle_new_game(&mut self) {
         if self.p_count < 2 {
             self.assign_player();
             self.incr_player();
@@ -65,10 +74,41 @@ impl Server {
         };
     }
 
-    fn handle_existing_player(&mut self, msg: String) {
+    ///Handle in progress game
+    fn handle_existing_game(&mut self, msg: String) {
         println!("message recieved: {}", msg);
-        // TODO - Check its players turn
-        // TODO - Update the board
-        // TODO - Send board to other player
+        let m = msg.split(',').collect::<Vec<&str>>();
+        if self.check_player_turn(&m) {
+            self.t_count += 1;
+            self.update_board(m);
+            self.update_players();
+        }
+    }
+
+    //Check its players turn
+    fn check_player_turn(&self, m: &Vec<&str>) -> bool {
+        let p = m[0].trim().parse::<u8>().unwrap_or_default();
+        p == self.p_turn
+    }
+
+    ///Update the board
+    fn update_board(&mut self, m: Vec<&str>) {
+        let b = String::from(m[1]).replace('\n', "");
+        let b = b.split('|').collect::<Vec<&str>>();
+        for i in 0..=8 {
+            self.board.board[i] = Piece::get_piece(b[i]);
+        }
+    }
+
+    //Send board to other player
+    fn update_players(&mut self) {
+        let m = format!("{},{}", self.t_count, self.board.draw());
+        if self.p_turn == 1 {
+            self.p_turn = 2;
+            send_message(m, P2_ROUTE);
+        } else {
+            self.p_turn = 1;
+            send_message(m, P1_ROUTE);
+        }
     }
 }

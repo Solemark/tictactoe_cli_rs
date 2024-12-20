@@ -16,10 +16,12 @@ impl TicTacToe {
     pub fn draw(&self) -> String {
         let (mut output, mut c) = (String::new(), 0);
         for m in &self.board {
-            output.push_str(m.get_icon());
+            output.push('|');
+            output.push(m.get_icon());
             c += 1;
             if c % 3 == 0 {
                 c = 0;
+                output.push('|');
                 output.push('\n');
             }
         }

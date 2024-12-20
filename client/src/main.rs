@@ -34,11 +34,16 @@ impl Client {
 
     fn start(&mut self) {
         self.display();
-
+        // TODO - TCPListener::bind self.route
         println!("Enter move: ");
         let mut input = String::new();
         self.read(&mut input);
-        let r = send_and_recv(input, SR_ROUTE, &self.route);
+        // TODO - Validate move & update board
+        let r = self.send_move(
+            format!("{},{}", self.player, self.board),
+            SR_ROUTE,
+            &self.route,
+        );
         //TODO - Validate r
     }
 
@@ -63,18 +68,15 @@ impl Client {
     }
 
     ///Send the move to the Server
-    fn send_move(&self) {
-        let r = send_and_recv(
-            format!("{},{}", self.player, self.board),
-            SR_ROUTE,
-            self.route.as_str(),
-        );
+    fn send_move(&self, msg: String, send_addr: &str, resp_addr: &str) -> String {
+        let r = send_and_recv(msg, send_addr, resp_addr);
         if r == "0" {
             println!("server desync, closing");
             exit(0);
         } else {
             println!("move successfully sent");
         }
+        r
     }
 
     ///flush, pass in and read from buffer
