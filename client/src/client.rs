@@ -1,9 +1,10 @@
-use std::{
-    io::{stdin, stdout, Write},
-    process::exit,
+use {
+    common::{send_and_recv, CN_ROUTE, SR_ROUTE},
+    std::{
+        io::{stdin, stdout, Write},
+        process::exit,
+    },
 };
-
-use common::{send_and_recv, CN_ROUTE, SR_ROUTE};
 
 pub const GAME_KEY: &str = "0 | 1 | 2\n3 | 4 | 5\n6 | 7 | 8";
 
